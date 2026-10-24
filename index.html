@@ -1,0 +1,609 @@
+
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zwierciadło Pytań — Terra Faber</title>
+
+<style>
+:root {
+  --gold: #c8a76b;
+  --gold-light: #f1dba4;
+  --cream: #f2e6d1;
+  --plum: #261629;
+  --dark: #120f19;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(ellipse at 50% 20%, #493047 0%, transparent 65%),
+    linear-gradient(135deg, #101c19, #251529 60%, #121719);
+  color: var(--cream);
+  font-family: Georgia, "Times New Roman", serif;
+  line-height: 1.65;
+}
+
+.stars {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+.star {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: #fff2c5;
+  animation: twinkle 3s infinite alternate;
+}
+
+@keyframes twinkle {
+  from { opacity: .12; transform: scale(.7); }
+  to { opacity: .9; transform: scale(1.4); }
+}
+
+.page {
+  position: relative;
+  z-index: 1;
+  width: min(900px, 94%);
+  margin: 35px auto;
+  padding: 32px 20px 50px;
+  text-align: center;
+  border: 1px solid #8d7049;
+  outline: 1px solid #51402f;
+  outline-offset: -8px;
+  background: rgba(23, 15, 28, .88);
+  box-shadow: 0 20px 65px #0009;
+}
+
+.ornament {
+  color: var(--gold);
+  font-size: 23px;
+  letter-spacing: 8px;
+}
+
+h1 {
+  color: var(--gold-light);
+  font-size: clamp(27px, 5vw, 43px);
+  font-weight: normal;
+  margin: 12px 0;
+}
+
+.intro {
+  max-width: 590px;
+  margin: 0 auto 26px;
+  color: #dfcbb6;
+  font-style: italic;
+}
+
+.mirror {
+  position: relative;
+  isolation: isolate;
+  width: min(390px, 94%);
+  min-height: 470px;
+  margin: 45px auto 38px;
+  padding: 18px;
+  border: 9px solid #b9985d;
+  border-radius: 50% / 50%;
+  background: linear-gradient(120deg, #75542d, #f0d798 20%, #8c642f 45%, #e5c17b 70%, #6e4925);
+  box-shadow: inset 0 0 0 3px #f0d798, 0 0 0 4px #372516, 0 0 0 7px #b9985d, 0 20px 45px #000b, 0 0 35px #b9985d33;
+}
+/* Jedyny ornament na szczycie lustra: niewielki fioletowy kamień. */
+.mirror-gem {
+  position: absolute;
+  z-index: 5;
+  left: 50%;
+  top: -28px;
+  width: 29px;
+  height: 37px;
+  transform: translateX(-50%);
+  border: 3px solid #d9b76e;
+  border-radius: 48% 48% 45% 45%;
+  background:
+    linear-gradient(128deg, transparent 42%, #f4caff88 43% 49%, transparent 50%),
+    linear-gradient(45deg, #33133e 0 28%, #9b5bc2 29% 52%, #502268 53% 74%, #c18cda 75%);
+  box-shadow: 0 0 0 2px #5d3c1d, inset 3px 2px 7px #f0c3ff77, inset -5px -5px 8px #200e32aa, 0 3px 8px #0009;
+}
+
+.glass {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 416px;
+  padding: 65px 26px 45px;
+  border: 2px solid #f0dba9;
+  border-radius: 50% / 50%;
+  background:
+    radial-gradient(ellipse at 35% 22%, #8c779a55, transparent 48%),
+    radial-gradient(ellipse at 65% 80%, #34564a55, transparent 65%),
+    linear-gradient(145deg, #263d43, #30233f 58%, #101c28);
+  box-shadow: inset 0 0 50px #050711dd;
+  overflow: hidden;
+}
+
+.mirror-symbol {
+  color: var(--gold-light);
+  font-size: 35px;
+  margin-bottom: 15px;
+  text-shadow: 0 0 20px #e4ca9b88;
+}
+
+.mirror-question {
+  font-size: clamp(16px, 3vw, 21px);
+  line-height: 1.65;
+  color: #fff1d9;
+  text-shadow: 0 2px 8px #000b;
+  overflow-wrap: anywhere;
+}
+
+.mirror-category {
+  color: #d8bb87;
+  font-size: 12px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+}
+
+.controls {
+  max-width: 650px;
+  margin: 0 auto;
+}
+
+.prompt {
+  color: var(--gold-light);
+  font-size: 19px;
+  margin-bottom: 16px;
+}
+
+.categories {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+button {
+  font-family: Georgia, serif;
+  cursor: pointer;
+  transition: background .2s, border-color .2s, transform .2s;
+}
+
+.category {
+  min-height: 55px;
+  padding: 10px;
+  border: 1px solid #9b7a50;
+  background: #2b2130;
+  color: #ebd9bc;
+  font-size: 14px;
+}
+
+.category:hover,
+.category.active {
+  background: #55405a;
+  border-color: #f1d49b;
+}
+
+.category:focus-visible,
+.action:focus-visible,
+.back:focus-visible {
+  outline: 2px solid #fff0bf;
+  outline-offset: 3px;
+}
+
+.category.random {
+  grid-column: 1 / -1;
+  background: #3c2b41;
+  color: #f2dfb7;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+
+.action {
+  padding: 12px 20px;
+  border: 1px solid #c5a268;
+  background: linear-gradient(#695038, #3d2c2c);
+  color: #fff0d5;
+  font-size: 15px;
+}
+
+.action:hover { background: #77543b; }
+.action:disabled { opacity: .45; cursor: not-allowed; }
+
+.status {
+  min-height: 24px;
+  margin-top: 16px;
+  color: #d2b78c;
+  font-size: 13px;
+}
+
+.back {
+  display: inline-block;
+  margin-top: 30px;
+  padding: 9px 15px;
+  border: 1px solid #876b4b;
+  color: #e3c99b;
+  background: transparent;
+  text-decoration: none;
+}
+
+footer {
+  margin-top: 35px;
+  color: #bba989;
+  font-size: 12px;
+  font-style: italic;
+}
+
+@media (max-width: 520px) {
+  .page { padding: 25px 13px 40px; }
+  .categories { grid-template-columns: 1fr; }
+  .category.random { grid-column: auto; }
+  .mirror { min-height: 440px; }
+  .glass { min-height: 386px; padding: 65px 20px 35px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+</style>
+</head>
+
+<body>
+<div class="stars" id="stars" aria-hidden="true"></div>
+
+<main class="page">
+  <div class="ornament">✧ ☾ ✧</div>
+  <h1>Zwierciadło Pytań</h1>
+
+  <p class="intro">
+    Nie każde pytanie potrzebuje natychmiastowej odpowiedzi.
+    Niektóre wystarczy zabrać ze sobą.
+  </p>
+
+  <div class="mirror">
+    <div class="mirror-gem" aria-hidden="true"></div>
+    <div class="glass" aria-live="polite" aria-atomic="true">
+      <div class="mirror-symbol">☽ ✧ ☾</div>
+      <div class="mirror-category" id="mirrorCategory">
+        Terra Faber
+      </div>
+      <div class="mirror-question" id="mirrorQuestion">
+        Spójrz w zwierciadło, wędrowcze.
+        Co dziś leży Ci na sercu?
+      </div>
+    </div>
+  </div>
+
+  <section class="controls">
+    <div class="prompt">
+      Z czym dziś przychodzisz?
+    </div>
+
+    <div class="categories" id="categories">
+      <button class="category" data-cat="0">Lęk i przyszłość</button>
+      <button class="category" data-cat="1">Własna wartość</button>
+      <button class="category" data-cat="2">Miłość i relacje</button>
+      <button class="category" data-cat="3">Poszukiwanie siebie</button>
+      <button class="category" data-cat="4">Przeszłość i przebaczenie</button>
+      <button class="category" data-cat="5">Szczęście i teraźniejszość</button>
+      <button class="category" data-cat="6">Odwaga i zmiany</button>
+      <button class="category" data-cat="7">
+  Marzenia i przeznaczenie
+</button>
+      <button class="category random active" data-cat="all">
+        ✧ Nie wiem. Niech zwierciadło zdecyduje ✧
+      </button>
+    </div>
+
+    <div class="actions">
+      <button class="action" id="drawButton">
+        ✧ Ukaż mi pytanie
+      </button>
+      <button class="action" id="copyButton" disabled>
+        Zachowaj pytanie
+      </button>
+    </div>
+
+    <div class="status" id="status" role="status"></div>
+  </section>
+
+  <a class="back" href="/">
+    ← Powróć do biblioteki
+  </a>
+
+  <footer>
+    Milion myśli, milion pytań · Terra Faber
+  </footer>
+</main>
+
+<script>
+(function () {
+  "use strict";
+
+  const collections = [
+    {
+      name: "Lęk i przyszłość",
+      questions: [
+        "Czy boisz się tego, co może się wydarzyć, czy tego, że nie poradzisz sobie z tym, co nadejdzie?",
+        "Ile dzisiejszego spokoju oddajesz wydarzeniom, które być może nigdy nie nastąpią?",
+        "Co zmieniłoby się w Twoim życiu, gdyby niepewność nie musiała oznaczać niebezpieczeństwa?",
+        "Czy próbujesz przewidzieć przyszłość, ponieważ wierzysz, że dzięki temu unikniesz cierpienia?",
+        "Co powiedziałabyś/powiedziałbyś komuś bliskiemu, kto martwi się dokładnie tym samym co Ty?",
+        "Czy istnieje coś, co możesz zrobić dzisiaj, zamiast próbować rozwiązać całe jutro?",
+        "Kiedy ostatnio rzeczywistość okazała się łagodniejsza od Twoich przewidywań?",
+        "Czy Twoje myśli opisują to, co naprawdę się dzieje, czy jedynie to, czego się obawiasz?",
+        "Gdybyś nie musiała/musiał znać zakończenia tej historii, co pozwoliłoby Ci cieszyć się jej obecnym rozdziałem?",
+        "Czy możesz pozwolić sobie na nadzieję, nawet jeśli nie masz pewności, że wszystko pójdzie po Twojej myśli?",
+        "Jak wyglądałby ten dzień, gdybyś postanowiła/postanowił przeżyć go, zamiast przygotowywać się na najgorsze?"
+      ]
+    },
+    {
+      name: "Własna wartość",
+      questions: [
+        "Gdybyś przestała/przestał mierzyć swoją wartość osiągnięciami, co pięknego dostrzegłabyś/dostrzegłbyś w sobie?",
+        "Czy oczekujesz od siebie rzeczy, których nigdy nie wymagałabyś/wymagałbyś od kogoś, kogo kochasz?",
+        "Kto nauczył Cię, że musisz być kimś wyjątkowym, aby zasługiwać na miłość?",
+        "Czy potrafisz dostrzec swoją wartość również w dniach, kiedy niczego nie osiągasz?",
+        "Jaką część siebie próbujesz ukryć tylko dlatego, że ktoś kiedyś uznał ją za niewłaściwą?",
+        "Gdyby nikt nie mógł podziwiać Twoich sukcesów, które z Twoich marzeń nadal byłyby ważne?",
+        "Czy jesteś wobec siebie sprawiedliwa/sprawiedliwy, kiedy oceniasz drogę, którą udało Ci się przejść?",
+        "Co powiedziałabyś/powiedziałbyś młodszej wersji siebie, która tak bardzo chciała być wystarczająca?",
+        "Czy Twoje życie musi robić wrażenie na innych, żeby mogło zachwycać Ciebie?",
+        "Co w sobie cenisz, czego nie da się wpisać do życiorysu ani pokazać w internecie?",
+        "Jak wyglądałoby Twoje życie, gdybyś nie musiała/musiał już nikomu udowadniać, że zasługujesz na swoje miejsce na świecie?"
+      ]
+    },
+    {
+      name: "Miłość i relacje",
+      questions: [
+        "Czy tęsknisz za konkretną osobą, czy za uczuciem, które towarzyszyło Ci w jej obecności?",
+        "Czy potrafisz być sobą przy ludziach, których najbardziej boisz się stracić?",
+        "Czy dajesz innym prawo do niedoskonałości, którego odmawiasz sobie?",
+        "Kiedy ostatnio powiedziałaś/powiedziałeś komuś, czego naprawdę potrzebujesz, zamiast liczyć, że sam się domyśli?",
+        "Czy zdarza Ci się mylić bycie potrzebną/potrzebnym z byciem kochaną/kochanym?",
+        "Jak wyglądałaby Twoja relacja z samą/samym sobą, gdybyś traktowała/traktował siebie jak najbliższą osobę?",
+        "Czy trzymasz się jakiejś relacji z miłości, czy ze strachu przed tym, co nastąpi po jej zakończeniu?",
+        "Kiedy samotność staje się dla Ciebie odpoczynkiem, a kiedy zaczyna boleć?",
+        "Czy pozwalasz ludziom poznawać prawdziwą wersję siebie, czy tylko tę, którą najłatwiej pokochać?",
+        "Co zmieniłoby się w Twoich relacjach, gdybyś przestała/przestał traktować granice jak odrzucenie?",
+        "Którym ludziom w Twoim życiu warto poświęcić więcej obecności, zanim wspólne chwile staną się wspomnieniami?"
+      ]
+    },
+    {
+      name: "Poszukiwanie siebie",
+      questions: [
+        "Czy naprawdę nie wiesz, kim jesteś, czy trudno Ci zaakceptować osobę, którą się stajesz?",
+        "Które z Twoich przekonań są naprawdę Twoje, a które zostały Ci przekazane przez innych?",
+        "Co sprawia, że czujesz się najbardziej sobą, nawet gdy nikt nie patrzy?",
+        "Czy próbujesz odnaleźć siebie, czy odzyskać wersję siebie, którą kiedyś byłaś/byłeś?",
+        "Gdyby Twoje życie nie musiało podążać żadną ustaloną ścieżką, dokąd chciałabyś/chciałbyś pójść?",
+        "Czy możesz pozwolić sobie nie wiedzieć jeszcze, kim chcesz zostać?",
+        "Jakie pragnienie od dawna do Ciebie powraca, mimo że próbujesz je ignorować?",
+        "Czy jesteś zagubiona/zagubiony dlatego, że nie masz kierunku, czy dlatego, że widzisz zbyt wiele możliwych dróg?",
+        "Co w Twoim życiu jest naprawdę Twoim wyborem, a co robisz jedynie dlatego, że tak wypada?",
+        "Gdybyś mogła/mógł zacząć od nowa bez konieczności tłumaczenia się komukolwiek, co zrobiłabyś/zrobiłbyś inaczej?",
+        "Czy możliwe, że nie musisz odnaleźć jednej ostatecznej wersji siebie, ponieważ masz prawo zmieniać się przez całe życie?"
+      ]
+    },
+    {
+      name: "Przeszłość i przebaczenie",
+      questions: [
+        "Czy oceniasz swoje dawne decyzje na podstawie wiedzy, której wtedy jeszcze nie miałaś/miałeś?",
+        "Co chciałabyś/chciałbyś powiedzieć dawnej wersji siebie, gdybyś zamiast ją osądzać, mogła/mógł ją zrozumieć?",
+        "Czy jest coś, czego nadal sobie nie wybaczasz, choć od tamtej pory bardzo się zmieniłaś/zmieniłeś?",
+        "Czy tęsknisz za przeszłością taką, jaka była, czy za tym, co pamięć postanowiła z niej zachować?",
+        "Które trudne doświadczenie nauczyło Cię czegoś, co dzisiaj pomaga Ci żyć?",
+        "Czy nadal próbujesz uzyskać od kogoś przeprosiny, których być może nigdy nie usłyszysz?",
+        "Co mogłoby się zmienić, gdybyś przestała/przestał wymagać od przeszłości, żeby wydarzyła się inaczej?",
+        "Czy potrafisz uznać, że pewien rozdział był ważny, nawet jeśli nie chcesz do niego wracać?",
+        "Jakie wspomnienie zasługuje na więcej wdzięczności, niż dotychczas mu poświęcasz?",
+        "Czy nosisz w sobie dawny wstyd, który dzisiaj nie musi już określać tego, kim jesteś?",
+        "Co chciałabyś/chciałbyś zabrać ze swojej przeszłości w przyszłość, a co możesz już zostawić za sobą?"
+      ]
+    },
+    {
+      name: "Szczęście i teraźniejszość",
+      questions: [
+        "Czy potrafisz rozpoznać szczęście, kiedy przychodzi cicho, bez wielkich wydarzeń?",
+        "Co w Twoim obecnym życiu jest czymś, o czym kiedyś tylko marzyłaś/marzyłeś?",
+        "Gdyby dzisiejszy dzień stał się kiedyś pięknym wspomnieniem, za czym najbardziej byś tęskniła/tęsknił?",
+        "Jakie trzy zwyczajne rzeczy sprawiają, że Twoje życie jest odrobinę przyjemniejsze?",
+        "Czy odkładasz radość na moment, w którym wszystko wreszcie będzie poukładane?",
+        "Kiedy ostatnio zrobiłaś/zrobiłeś coś wyłącznie dla przyjemności, bez myślenia o tym, czy jest to pożyteczne?",
+        "Co mogłabyś/mógłbyś dziś zauważyć, gdybyś na chwilę przestała/przestał porównywać swoje życie z cudzym?",
+        "Czy dajesz sobie prawo do szczęścia również wtedy, kiedy nie wszystkie problemy zostały rozwiązane?",
+        "Które małe momenty Twojej codzienności zasługują na więcej uwagi?",
+        "Gdybyś nie musiała/musiał dzisiaj niczego udowadniać ani nadrabiać, na co przeznaczyłabyś/przeznaczyłbyś swój czas?",
+        "Czy to możliwe, że część życia, na które czekasz, już właśnie trwa?"
+      ]
+    },
+    {
+      name: "Odwaga i zmiany",
+      questions: [
+        "Czy czekasz na pewność, która być może nigdy nie nadejdzie, zanim pozwolisz sobie zrobić pierwszy krok?",
+        "Co zrobiłabyś/zrobiłbyś, gdybyś wiedziała/wiedział, że nawet niepowodzenie nie odbierze Ci wartości?",
+        "Czy bardziej boisz się podjąć niewłaściwą decyzję, czy wziąć odpowiedzialność za własne pragnienia?",
+        "Które marzenie odkładasz, ponieważ wydaje Ci się, że najpierw musisz stać się kimś innym?",
+        "Czy istnieje droga, którą od dawna chcesz wybrać, ale boisz się rozczarować innych?",
+        "Co mogłabyś/mógłbyś zmienić już teraz, zamiast czekać na idealny moment?",
+        "Czy traktujesz zmianę zdania jako porażkę, czy jako dowód, że dowiadujesz się czegoś nowego o sobie?",
+        "Jaką decyzję podjęłabyś/podjąłbyś, gdybyś kierowała/kierował się troską o siebie, a nie wyłącznie strachem?",
+        "Czy to, co wydaje Ci się końcem pewnej historii, może być również początkiem czegoś, czego jeszcze nie potrafisz sobie wyobrazić?",
+        "Jak wyglądałaby odwaga, gdyby nie oznaczała braku strachu, lecz gotowość do działania pomimo niego?",
+        "Gdybyś za wiele lat mogła/mógł spojrzeć na swoje życie z czułością, czego chciałabyś/chciałbyś móc o nim powiedzieć?"
+      ]
+    },
+    
+{
+  name: "Marzenia i przeznaczenie",
+  questions: [
+    "Gdybyś wiedziała/wiedział, że Twoje marzenia nie muszą być rozsądne, czego odważyłabyś/odważyłbyś się zapragnąć?",
+    "Czy marzenie, które nosisz w sercu, naprawdę należy do Ciebie, czy do osoby, którą według innych powinnaś/powinieneś się stać?",
+    "Gdyby Twoje przeznaczenie nie było miejscem, do którego musisz dotrzeć, lecz drogą, którą już idziesz, co zmieniłoby się w Twoim spojrzeniu na życie?",
+    "Które marzenie powraca do Ciebie od lat, nawet kiedy próbujesz o nim zapomnieć?",
+    "Czy potrafisz cieszyć się drogą do marzenia, czy odkładasz szczęście na chwilę jego spełnienia?",
+    "Gdyby wszechświat nie oczekiwał od Ciebie niczego poza przeżyciem własnego życia, co przestałabyś/przestałbyś sobie narzucać?",
+    "Czy boisz się, że Twoje marzenia się nie spełnią, czy tego, że po ich spełnieniu nadal będziesz szukać czegoś więcej?",
+    "Jak wyglądałoby Twoje życie, gdybyś przestała/przestał pytać, czy jesteś na właściwej drodze, i zaczęła/zaczął pytać, czy ta droga jest naprawdę Twoja?",
+    "Czy istnieje pragnienie, którego nie pozwalasz sobie wypowiedzieć na głos, ponieważ jego spełnienie wymagałoby zmiany?",
+    "Gdybyś mogła/mógł porozmawiać ze sobą za dwadzieścia lat, o co chciałabyś/chciałbyś zapytać, zanim dowiesz się, co udało Ci się osiągnąć?",
+    "A jeśli przeznaczenie nie jest czymś, co na Ciebie czeka, lecz czymś, co tworzysz każdym swoim wyborem — jaki będzie Twój następny krok?"
+  ]
+}
+
+  ];
+
+  const questionEl = document.getElementById("mirrorQuestion");
+  const categoryEl = document.getElementById("mirrorCategory");
+  const statusEl = document.getElementById("status");
+  const drawButton = document.getElementById("drawButton");
+  const copyButton = document.getElementById("copyButton");
+  const categoryButtons = document.querySelectorAll(".category");
+
+  let selectedCategory = "all";
+  let currentQuestion = "";
+  const used = new Set();
+
+  // Tworzymy unikalny identyfikator dla każdego pytania.
+  const allQuestions = collections.flatMap((collection, catIndex) =>
+    collection.questions.map((question, questionIndex) => ({
+      id: catIndex + "-" + questionIndex,
+      category: collection.name,
+      catIndex: catIndex,
+      text: question
+    }))
+  );
+
+  function pickRandom(items) {
+    if (window.crypto && window.crypto.getRandomValues) {
+      const array = new Uint32Array(1);
+      const range = 4294967296;
+      const limit = range - (range % items.length);
+      let number;
+      do {
+        window.crypto.getRandomValues(array);
+        number = array[0];
+      } while (number >= limit);
+      return items[number % items.length];
+    }
+    return items[Math.floor(Math.random() * items.length)];
+  }
+
+  function drawQuestion() {
+    const pool = selectedCategory === "all"
+      ? allQuestions
+      : allQuestions.filter(item =>
+          item.catIndex === Number(selectedCategory)
+        );
+
+    let available = pool.filter(item => !used.has(item.id));
+
+    // Po wykorzystaniu całej kategorii rozpoczynamy nowy cykl.
+    if (available.length === 0) {
+      pool.forEach(item => used.delete(item.id));
+      available = pool;
+    }
+
+    const chosen = pickRandom(available);
+    used.add(chosen.id);
+
+    currentQuestion = chosen.text;
+    categoryEl.textContent = chosen.category;
+    questionEl.textContent = chosen.text;
+
+    drawButton.textContent = "✧ Zapytaj mnie ponownie";
+    copyButton.disabled = false;
+    statusEl.textContent = "Nie spiesz się z odpowiedzią.";
+  }
+
+  categoryButtons.forEach(button => {
+    button.addEventListener("click", function () {
+      selectedCategory = this.dataset.cat;
+
+      categoryButtons.forEach(item => {
+        item.classList.remove("active");
+        item.setAttribute("aria-pressed", "false");
+      });
+
+      this.classList.add("active");
+      this.setAttribute("aria-pressed", "true");
+
+      drawQuestion();
+    });
+  });
+
+  // Domyślnie zaznaczona opcja losowa.
+  categoryButtons.forEach(button => {
+    button.setAttribute(
+      "aria-pressed",
+      button.dataset.cat === "all" ? "true" : "false"
+    );
+  });
+
+  drawButton.addEventListener("click", drawQuestion);
+
+  copyButton.addEventListener("click", async function () {
+    if (!currentQuestion) return;
+
+    try {
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(currentQuestion);
+      } else {
+        const temp = document.createElement("textarea");
+        temp.value = currentQuestion;
+        temp.style.position = "fixed";
+        temp.style.opacity = "0";
+        document.body.appendChild(temp);
+        temp.select();
+
+        const copied = document.execCommand("copy");
+        temp.remove();
+
+        if (!copied) throw new Error("Kopiowanie nie powiodło się");
+      }
+
+      statusEl.textContent = "Pytanie jest już z Tobą. ✧";
+    } catch (error) {
+      statusEl.textContent =
+        "Nie udało się skopiować. Możesz zaznaczyć pytanie ręcznie.";
+    }
+  });
+
+  // Delikatnie migoczące gwiazdy.
+  const starsContainer = document.getElementById("stars");
+
+  for (let i = 0; i < 45; i++) {
+    const star = document.createElement("span");
+    star.className = "star";
+    star.style.left = Math.random() * 100 + "%";
+    star.style.top = Math.random() * 100 + "%";
+    star.style.animationDelay = Math.random() * 5 + "s";
+    star.style.animationDuration = 2 + Math.random() * 4 + "s";
+    starsContainer.appendChild(star);
+  }
+
+  // Kontrola kompletności kolekcji.
+  if (allQuestions.length !== 88) {
+    console.warn("Zwierciadło powinno zawierać 88 pytań.");
+  }
+})();
+</script>
+</body>
+</html>
